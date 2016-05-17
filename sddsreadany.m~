@@ -1,0 +1,48 @@
+function array = sddsreadany(filename,col_par,col,pag)
+% extracts string value from an sddsfile or sddsloaded variable COLUMN
+% INPUT:
+% filename (string)-> name of sdds file or sddsloaded variable
+% col_par (string)-> switch to select wether data i
+% col (string)-> column name
+% pag (integer) -> page number
+% OUTPUT:
+% namearray -> array of the values of the strings read
+
+switch class(filename)
+    case 'char'
+        sdds=sddsload(filename);
+    case 'struct'
+        sdds=filename;
+end
+
+page = ['page' num2str(pag)];
+
+switch col_par
+    case 'col'
+        names = sdds.column.(col).(page);
+    case 'par'
+        names = sdds.column.(col).(page);
+    otherwise
+        disp('Unknown method.')
+end
+
+names_size = size(names,1);
+
+array = cell(names_size,1);
+
+switch class(sdds.column.(col).type)
+    case 'java.lang.String'
+        if sdds.column.(col).type == 'string'
+            for i=1:names_size
+            array{i}=strtrim(strjoin(cellstr(char(names(i,:)))));
+            end
+        else
+            array = sdds.column.(col).(page)
+        end
+    case 'java.lang.Char'
+        array = names;
+    otherwise
+        disp('Unknown method.')
+end
+
+end
